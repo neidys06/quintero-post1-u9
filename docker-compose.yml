@@ -1,0 +1,18 @@
+# Alternativa a instalar MySQL: levanta MySQL 8 con la base y el usuario del laboratorio.
+# Uso: docker compose up -d   (desde la raíz del repositorio)
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: seguridad-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: seguridad_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - seguridad-data:/var/lib/mysql
+volumes:
+  seguridad-data:

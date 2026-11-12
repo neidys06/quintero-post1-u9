@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <h1>Iniciar Sesión</h1>
+    <div th:if="${param.error}" class="alerta error">Correo o contraseña incorrectos.</div>
+    <div th:if="${param.logout}" class="alerta ok">Sesión cerrada correctamente.</div>
+    <div th:if="${param.registrado}" class="alerta ok">Registro exitoso. Inicie sesión.</div>
+
+    <!-- Spring Security procesa el POST a /login. Al usar th:action, Thymeleaf
+         agrega automáticamente el campo oculto _csrf con el token. -->
+    <form th:action="@{/login}" method="post">
+        <label>Correo: <input type="email" name="username" required autofocus></label>
+        <label>Contraseña: <input type="password" name="password" required></label>
+        <button type="submit">Ingresar</button>
+    </form>
+    <p><a th:href="@{/registro}">¿No tiene cuenta? Registrarse</a></p>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <h1>Panel de Administración</h1>
+    <p><a th:href="@{/dashboard}">&larr; Volver al dashboard</a></p>
+
+    <h2>Usuarios registrados</h2>
+    <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Activo</th></tr></thead>
+        <tbody>
+            <!-- th:text también aquí: el nombre de cualquier usuario es dato no confiable -->
+            <tr th:each="u : ${usuarios}">
+                <td th:text="${u.id}"></td>
+                <td th:text="${u.nombre}"></td>
+                <td th:text="${u.email}"></td>
+                <td th:text="${u.rol}"></td>
+                <td th:text="${u.activo} ? 'Sí' : 'No'"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Todas las tareas</h2>
+    <table>
+        <thead><tr><th>ID</th><th>Título</th><th>Propietario</th><th>Estado</th></tr></thead>
+        <tbody>
+            <tr th:each="t : ${tareas}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.titulo}"></td>
+                <td th:text="${t.propietario.email}"></td>
+                <td th:text="${t.completada} ? 'Completada' : 'Pendiente'"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

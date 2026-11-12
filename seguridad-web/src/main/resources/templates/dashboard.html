@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <!-- SEGURO (versión final que queda en el commit): th:text escapa el contenido.
+         Si el nombre es "<script>alert("XSS")</script>", Thymeleaf lo renderiza como
+         &lt;script&gt;... y el navegador lo muestra como texto plano, sin ejecutarlo. -->
+    <p>Bienvenido, <strong th:text="${nombre}"></strong></p>
+
+    <!-- INSEGURO — SOLO PARA LA PRUEBA DEL PASO 8, luego se revierte:
+    <p th:utext="${nombre}"></p>
+    Con th:utext, el mismo valor se inserta como HTML sin escapar: si el nombre
+    contiene <script>alert("XSS")</script>, el navegador SÍ lo ejecuta. Esta línea
+    se activó temporalmente para la captura del README y se volvió a comentar. -->
+
+    <p class="rol">Sesión: <span th:text="${email}"></span> —
+        roles: <span sec:authentication="authorities"></span></p>
+
+    <!-- Solo visible para ADMIN -->
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-admin">Panel de Administración</a>
+
+    <div th:if="${mensaje}" class="alerta ok" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alerta error" th:text="${error}"></div>
+
+    <h2>Nueva tarea</h2>
+    <form th:action="@{/tareas}" method="post" class="fila">
+        <label>Título <input type="text" name="titulo" required maxlength="150"></label>
+        <label>Descripción <input type="text" name="descripcion" maxlength="500"></label>
+        <button type="submit">Crear</button>
+    </form>
+
+    <h2>Mis tareas</h2>
+    <!-- Buscador: el texto se envía a un @Query parametrizado (prueba de SQL Injection) -->
+    <form th:action="@{/tareas/buscar}" method="get" class="fila">
+        <label>Buscar por título <input type="text" name="texto" th:value="${busqueda}"></label>
+        <button type="submit">Buscar</button>
+        <a th:href="@{/dashboard}" class="btn btn-sec">Ver todas</a>
+    </form>
+    <p th:if="${busqueda != null}">
+        Resultados para "<span th:text="${busqueda}"></span>":
+        <strong th:text="${#lists.size(tareas)}"></strong> tarea(s).
+    </p>
+
+    <table>
+        <thead><tr><th>ID</th><th>Título</th><th>Descripción</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>
+            <tr th:each="t : ${tareas}">
+                <td th:text="${t.id}"></td>
+                <td th:text="${t.titulo}" th:classappend="${t.completada} ? 'completada' : ''"></td>
+                <td th:text="${t.descripcion}"></td>
+                <td th:text="${t.completada} ? 'Completada' : 'Pendiente'"></td>
+                <td>
+                    <form th:if="${!t.completada}" class="inline" method="post"
+                          th:action="@{/tareas/{id}/completar(id=${t.id})}">
+                        <button type="submit">Completar</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(tareas)}"><td colspan="5">Sin tareas.</td></tr>
+        </tbody>
+    </table>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-sec">Cerrar Sesión</button>
+    </form>
+</body>
+</html>
